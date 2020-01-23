@@ -1,7 +1,11 @@
 ---
 layout: page
+current: acerca-de
 title: Acerca de
-permalink: /acerca-de/
+navigation: true
+logo: 'assets/images/ghost.png'
+class: page-template
+subclass: 'post page'
 ---
 
 Bienvenidos a mi blog!
