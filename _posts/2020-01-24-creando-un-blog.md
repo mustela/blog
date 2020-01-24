@@ -8,7 +8,7 @@ date: 2020-01-24 10:00:00
 tags: [Blog]
 class: post-template
 subclass: 'post tag-getting-started'
-author: ghost
+author: mustela
 ---
 
 Hey! Welcome to Ghost, it's great to have you :)
