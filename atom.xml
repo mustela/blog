@@ -6,5 +6,20 @@
     <link>
     https://emilianojankowski.com</link>
     
+      
+      <item>
+        <title>Creando un blog usando Github Pages y Kekyll</title>
+        
+          <description>&lt;p&gt;Hey! Welcome to Ghost, it’s great to have you :)&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Fri, 24 Jan 2020 10:00:00 +0000</pubDate>
+        <link>
+        https://emilianojankowski.com/creando-un-blog</link>
+        <guid isPermaLink="true">https://emilianojankowski.com/creando-un-blog</guid>
+      </item>
+      
+    
   </channel>
 </rss>
