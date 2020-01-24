@@ -1,11 +1,11 @@
 ---
 layout: post
 current: post
-cover:  assets/images/welcome.jpg
+cover:  assets/images/writting-blog.png
 navigation: True
-title: Welcome to Ghost
-date: 2017-07-27 10:00:00
-tags: [Getting started]
+title: Creando un blog usando Github Pages y Kekyll
+date: 2020-01-24 10:00:00
+tags: [Blog]
 class: post-template
 subclass: 'post tag-getting-started'
 author: ghost

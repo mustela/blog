@@ -5,12 +5,12 @@ paginate: 100 # it will paginate after this number
 language: 'en-uk'
 words_per_minute: 200
 
-site:
-  baseurl: "/"
+# site:
+#   baseurl: "/"
 
 # edit baseurl to simply '/' if using as your personal page (instead of a project page)
 baseurl: "/"
-url: "https://emilianojankowski.com/"
+url: "https://emilianojankowski.com"
 
 # Website info
 title: Emiliano Jankowski
