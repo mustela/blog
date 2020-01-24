@@ -16,7 +16,7 @@ url: "https://emilianojankowski.com"
 title: Emiliano Jankowski
 description: Un blog como tantos otros
 cover: /assets/images/blog-cover.jpg
-logo: /assets/images/blog-icon.png
+logo:
 logo_dark: /assets/images/favicon.png
 favicon: /assets/images/favicon.png
 production_url: https://emilianojankowski.com/
