@@ -55,7 +55,6 @@ Si lo que intentas es copiar estas filas sobre una base de datos vacía, puedes 
   \COPY tu_tabla FROM '/home/tu_tabla.csv' DELIMITER '|' CSV HEADER;
   ALTER TABLE tu_tabla ENABLE TRIGGER ALL;
   ```
-
 3. Importar primero todas las relaciones y luego finalmente la tabla principal. 
 
 Espero te haya servido :)
