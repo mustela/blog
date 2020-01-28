@@ -4,7 +4,7 @@
   <generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator>
   <link href="https://emilianojankowski.com/tag/blog/feed.xml" rel="self" type="application/atom+xml" />
   <link href="https://emilianojankowski.com/" rel="alternate" type="text/html" />
-  <updated>2020-01-24T10:43:32+00:00</updated>
+  <updated>2020-01-28T10:57:22+00:00</updated>
   <id>https://emilianojankowski.com/tag/blog/feed.xml</id>
 
   
@@ -23,8 +23,6 @@
 
   
     
-      
-    
   
 
   
@@ -32,27 +30,61 @@
 
   
     <entry>
-      <title type="html">Creando un blog usando Github Pages y Kekyll</title>
-      <link href="https://emilianojankowski.com/creando-un-blog" rel="alternate" type="text/html" title="Creando un blog usando Github Pages y Kekyll" />
-      <published>2020-01-24T10:00:00+00:00</published>
-      <updated>2020-01-24T10:00:00+00:00</updated>
-      <id>https://emilianojankowski.com/creando-un-blog</id>
-      <content type="html" xml:base="https://emilianojankowski.com/creando-un-blog">&lt;p&gt;Hey! Welcome to Ghost, it’s great to have you :)&lt;/p&gt;
+      <title type="html">Copiando datos de un servidor Postgres a otro</title>
+      <link href="https://emilianojankowski.com/copiando-datos-entre-bases-de-datos" rel="alternate" type="text/html" title="Copiando datos de un servidor Postgres a otro" />
+      <published>2020-01-28T10:00:00+00:00</published>
+      <updated>2020-01-28T10:00:00+00:00</updated>
+      <id>https://emilianojankowski.com/copiando-datos-entre-bases-de-datos</id>
+      <content type="html" xml:base="https://emilianojankowski.com/copiando-datos-entre-bases-de-datos">&lt;p&gt;Una de las tareas con las que tuve que lidiar hoy, fue intentar analizar porque ciertos procesos estaban demorando más de lo esperado. Estos procesos generan eventos a medida que van completando distintas etapas.&lt;/p&gt;
 
-&lt;p&gt;We know that first impressions are important, so we’ve populated your new site with some initial &lt;strong&gt;Getting Started&lt;/strong&gt; posts that will help you get familiar with everything in no time. This is the first one!&lt;/p&gt;
+&lt;p&gt;Los eventos están almacenados en una base de datos &lt;a href=&quot;https://www.postgresql.org/&quot;&gt;Postgres&lt;/a&gt;, y hay más de 50 millones de registros.&lt;/p&gt;
 
-&lt;h3 id=&quot;there-are-a-few-things-that-you-should-know-up-front&quot;&gt;There are a few things that you should know up-front:&lt;/h3&gt;
+&lt;p&gt;El problema que tuve fue que por cuestiones técnicas y de seguridad, acceder desde “afuera” a la base de datos que contiene todos estos registros no era posible, así que comencé a pensar de que manera podia extraer ciertas tablas y poder procesarlas en otro servidor con herramientas cómo &lt;a href=&quot;https://airflow.apache.org/&quot;&gt;Airflow&lt;/a&gt; y &lt;a href=&quot;https://www.metabase.com/&quot;&gt;Metabase&lt;/a&gt;. Acceder a un backup tampoco era una opción.&lt;/p&gt;
+
+&lt;p&gt;Fue entonces cuando recordé que hay una utilidad en Postgres que permite generar archivos de texto basado en consultas o tablas directamente. El meta comando &lt;code class=&quot;highlighter-rouge&quot;&gt;\copy&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;La sintaxis del meta comando es la siguiente:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;\copy { table | ( query ) } { from | to } { ‘filename’ } [ [ with ] ( option [, …] ) ]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Asumiendo de que tienes acceso a la base de datos, veamos como puedes generar los archivos de texto utilizando este comando:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;COPY tu_tabla to '/tmp/tu_tabla.csv' WITH DELIMITER '|' CSV HEADER;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Si en cambio estas intentando exportar una query, podrías cambiarlo por&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;COPY (select * from tu_tabla where algo=‘completado') to '/tmp/tu_tabla.csv' WITH DELIMITER '|' CSV HEADER;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Puedes cambiar el delimitador a lo que quieras, dependerá de qué es lo que contienen tus datos. En mi caso estos eventos, poseen &lt;code class=&quot;highlighter-rouge&quot;&gt;,&lt;/code&gt; dentro y me estaban generando algunos problemas de parseo.&lt;/p&gt;
+
+&lt;p&gt;Si editas por alguna razón estos archivos de forma manual, asegurate de que no contienen una linea en blanco al final del archivo, o tendrás problemas a la hora de importar los datos nuevamente.&lt;/p&gt;
+
+&lt;p&gt;Una vez que tienes todos los datos generados, para importarlos en otra base de datos ejecuta lo siguiente:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;\COPY tu_tabla FROM '/home/tu_tabla.csv' DELIMITER '|' CSV HEADER;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Si lo que intentas es copiar estas filas sobre una base de datos vacía, puedes encontrarte con problemas de claves. Por ejemplo en mi caso los eventos dependen de otras tablas, asi que tienes un par de alternativas para resolver esto:&lt;/p&gt;
+
 &lt;ol&gt;
-  &lt;li&gt;Ghost is designed for ambitious, professional publishers who want to actively build a business around their content. That’s who it works best for. If you’re using Ghost for some other purpose, that’s fine too - but it might not be the best choice for you.&lt;/li&gt;
-  &lt;li&gt;The entire platform can be modified and customized to suit your needs, which is very powerful, but doing so &lt;strong&gt;does&lt;/strong&gt; require some knowledge of code. Ghost is not necessarily a good platform for beginners or people who just want a simple personal blog.&lt;/li&gt;
-  &lt;li&gt;For the best experience we recommend downloading the Ghost Desktop App for your computer, which is the best way to access your Ghost site on a desktop device.&lt;/li&gt;
+  &lt;li&gt;Borras las referencias, por ejemplo &lt;code class=&quot;highlighter-rouge&quot;&gt;ALTER TABLE tu_tabla DROP CONSTRAINT nombre_constraint;&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Deshabitar las relaciones/referencias e importas:&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;Ghost is made by an independent non-profit organisation called the Ghost Foundation. We are 100% self funded by revenue from our &lt;a href=&quot;https://ghost.org/pricing&quot;&gt;Ghost(Pro)&lt;/a&gt; service, and every penny we make is re-invested into funding further development of free, open source technology for modern journalism.&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  ALTER TABLE tu_tabla DISABLE TRIGGER ALL;
+  \COPY tu_tabla FROM '/home/tu_tabla.csv' DELIMITER '|' CSV HEADER;
+  ALTER TABLE tu_tabla ENABLE TRIGGER ALL;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;The main thing you’ll want to read about next is probably: &lt;a href=&quot;https://demo.ghost.io/the-editor/&quot;&gt;the Ghost editor&lt;/a&gt;.&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Importar primero todas las relaciones y luego finalmente la tabla principal.&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;p&gt;Once you’re done reading, you can simply delete the default &lt;strong&gt;Ghost&lt;/strong&gt; user from your team to remove all of these introductory posts!&lt;/p&gt;</content>
+&lt;p&gt;Espero te haya servido :)&lt;/p&gt;
+
+&lt;p&gt;Cya!&lt;/p&gt;</content>
 
       
       
@@ -61,7 +93,7 @@
       
 
       <author>
-          <name>mustela</name>
+          <name></name>
         
         
       </author>
@@ -73,7 +105,78 @@
       
 
       
-        <summary type="html">Hey! Welcome to Ghost, it’s great to have you :)</summary>
+        <summary type="html">Una de las tareas con las que tuve que lidiar hoy, fue intentar analizar porque ciertos procesos estaban demorando más de lo esperado. Estos procesos generan eventos a medida que van completando distintas etapas.</summary>
+      
+
+      
+      
+    </entry>
+  
+    <entry>
+      <title type="html">Creando tu primer blog con Github Pages y Jekyll</title>
+      <link href="https://emilianojankowski.com/creando-un-blog" rel="alternate" type="text/html" title="Creando tu primer blog con Github Pages y Jekyll" />
+      <published>2020-01-24T10:00:00+00:00</published>
+      <updated>2020-01-24T10:00:00+00:00</updated>
+      <id>https://emilianojankowski.com/creando-un-blog</id>
+      <content type="html" xml:base="https://emilianojankowski.com/creando-un-blog">&lt;p&gt;Hace unos días comencé a pensar en la idea de tener un blog en donde poder ir documentando los problemas, desafíos y aprendizajes de mi día a día.&lt;/p&gt;
+
+&lt;p&gt;Para evaluar las posibles herramientas o plataformas a utilizar arme una lista de lo que esperaba para mi blog:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Performance: el blog tiene que ser increíblemente super archi rápido. Punto. :D&lt;/li&gt;
+  &lt;li&gt;Themes: Contar con un buen catalogo de themes. No tengo el tiempo de sentarme a programas CSS.&lt;/li&gt;
+  &lt;li&gt;Extensible: Tener la posibilidad de fácilmente extender la funcionalidad del blog (Google Analytics, comentarios, listas de distribución, etc). A travez de plugins o algún otro mecanismo.&lt;/li&gt;
+  &lt;li&gt;Markdown: El contenido del blog tiene que estar escrito en su &lt;strong&gt;totalidad&lt;/strong&gt; en markdown. Esto debido principalmente a que quiero tener la flexibilidad de moverme a otra plataforma si me encuentro con alguna dificultad en la que seleccione.&lt;/li&gt;
+  &lt;li&gt;Divertido: Sabiendo que seguramente pasare algunas horas por semana intentando escribir, la herramienta o plataforma que elija tiene que ser fácil, rápida pero sobre todo muy divertida de usar! 
+Hosting: No tener que ademas de elegir una herramienta, usar 
+Free: En lo posible que sea gratis o al menos muy económico. El blog es un experimento, quiero ver qué tan fácil es mantenerlo, probar algunas herramientas, etc. Con lo cual, cuanto menos gasto tenga mejor.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Ahora que sé que quiero, veamos que puedo usar para llevar adelante esta idea!&lt;/p&gt;
+
+&lt;h4 id=&quot;elixirserum&quot;&gt;Elixir/Serum&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://elixir-lang.org/&quot;&gt;Elixir&lt;/a&gt; es un lenguaje por el que me he fascinado en estos últimos meses. Así que la primer opción fue buscar si ya había alguna solución que cumpliera con mis condiciones/necesidades.
+&lt;a href=&quot;https://elixirforum.com/t/elixir-blogging-software/8918&quot;&gt;Encontré algunas por aquí&lt;/a&gt; y algunas mas &lt;a href=&quot;https://github.com/h4cc/awesome-elixir#static-page-generation&quot;&gt;aquí&lt;/a&gt;, pero lamentablemente muchas de ellas, hace ya mucho tiempo que se encuentran sin actividad. &lt;a href=&quot;https://github.com/Dalgona/Serum&quot;&gt;Serum&lt;/a&gt; es la única que se mantiene en pie, con lo que me decidí a probarla y en un par de minutos ya lo tenia corriendo.&lt;/p&gt;
+
+&lt;p&gt;De entraba sabia que usar algo como &lt;a href=&quot;https://github.com/Dalgona/Serum&quot;&gt;Serum&lt;/a&gt;, me iba a obligar también a pensar en donde iba a hospedar el blog, y esa era una de las cosas que no tenia intensiones de hacer, pero mi amor por Elixir me llevo a probarlo igual.&lt;/p&gt;
+
+&lt;p&gt;En cuanto a características, mal que mal reúne todo lo que buscaba, performance, markdown, extensibilidad, cierta madurez, pero el catálogo de themes es muy reducido, al igual que el de plugins. Y el punto de tener que buscar también un hosting que me permitiera publicarla hizo que rechazara esta opción.  Al menos por ahora :)&lt;/p&gt;
+
+&lt;h4 id=&quot;golanghugo&quot;&gt;Golang/HUGO&lt;/h4&gt;
+
+&lt;p&gt;La otra herramienta que evalúe, fue &lt;a href=&quot;https://gohugo.io/&quot;&gt;Hugo&lt;/a&gt;, honestamente reúne todo lo que buscaba, excepto la parte divertida. Sí, lo sé, con este comentario, estoy cavando mi propia tumba. Hoy en día, &lt;a href=&quot;https://golang.org/&quot;&gt;Go&lt;/a&gt; es &lt;strong&gt;EL&lt;/strong&gt; lenguaje, de moda, todos (o la gran mayoría) quiere usarlo y hablan maravillas de él (y no lo dudo). A mí, personalmente, hay un tema de “piel” que hace que no me decida por usarlo (ya escribiré mas acerca de Go porque en algún otro post). Así que HUGO descartado.&lt;/p&gt;
+
+&lt;h4 id=&quot;github-pagesjekyll&quot;&gt;Github pages/Jekyll&lt;/h4&gt;
+
+&lt;p&gt;Hace tiempo que venia con ganas de poder usar &lt;a href=&quot;https://pages.github.com/&quot;&gt;GitHub pages&lt;/a&gt; para algo. Uso Github en mi dia a dia, en el trabajo y proyectos personales, pero por una cosa o la otra no había podido usar nunca Github Pages.&lt;/p&gt;
+
+&lt;p&gt;Luego de leer la &lt;a href=&quot;https://help.github.com/en/github/working-with-github-pages&quot;&gt;documentación&lt;/a&gt;, investigar un poco, ver como funcionaba, lo fácil que esta conectado con los repositorios, el hecho de que no tenga que manejar deploys, sea gratis (solo para repositorios públicos), estable, extensible gracias a &lt;a href=&quot;https://jekyllrb.com/&quot;&gt;Jekyll&lt;/a&gt;, un catalogo de themes enorme, plugins a mas no poder, y sobre todo divertido! Todo esto hizo de esta opción la mejor de todas. Así que aquí estamos, con mi primer post en el blog corriendo sobre Github Pages.&lt;/p&gt;
+
+&lt;p&gt;Ahora a pensar en el siguiente post :)&lt;/p&gt;
+
+&lt;p&gt;Cya!&lt;/p&gt;</content>
+
+      
+      
+      
+      
+      
+
+      <author>
+          <name></name>
+        
+        
+      </author>
+
+      
+
+      
+        <category term="Blog" />
+      
+
+      
+        <summary type="html">Hace unos días comencé a pensar en la idea de tener un blog en donde poder ir documentando los problemas, desafíos y aprendizajes de mi día a día.</summary>
       
 
       

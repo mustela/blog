@@ -8,9 +8,24 @@
     
       
       <item>
-        <title>Creando un blog usando Github Pages y Kekyll</title>
+        <title>Copiando datos de un servidor Postgres a otro</title>
         
-          <description>&lt;p&gt;Hey! Welcome to Ghost, it’s great to have you :)&lt;/p&gt;
+          <description>&lt;p&gt;Una de las tareas con las que tuve que lidiar hoy, fue intentar analizar porque ciertos procesos estaban demorando más de lo esperado. Estos procesos generan eventos a medida que van completando distintas etapas.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Tue, 28 Jan 2020 10:00:00 +0000</pubDate>
+        <link>
+        https://emilianojankowski.com/copiando-datos-entre-bases-de-datos</link>
+        <guid isPermaLink="true">https://emilianojankowski.com/copiando-datos-entre-bases-de-datos</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Creando tu primer blog con Github Pages y Jekyll</title>
+        
+          <description>&lt;p&gt;Hace unos días comencé a pensar en la idea de tener un blog en donde poder ir documentando los problemas, desafíos y aprendizajes de mi día a día.&lt;/p&gt;
 
 </description>
         
